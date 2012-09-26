@@ -4,6 +4,7 @@
 *.dmg
 *.tar
 *.out
+*.in
 
 # OS generated files #
 ######################
