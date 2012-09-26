@@ -37,7 +37,7 @@ bool voting_readBallot (std::istream& r, int numChoices, std::deque<int>& ballot
     {
         r >> ballot[i]; //this reads one number at a time and assigns it to a spot in the deque (>> operator is delimited by whitespace)
 
-        cout << "ballot at i: " << i << " " << ballot[i] << endl;
+        //cout << "ballot at i: " << i << " " << ballot[i] << endl;
     }
     if(!r) //"if there wasn't anything left to be read" (I don't think this should ever be reached because we know the number of candidates)
         return false;
@@ -107,7 +107,7 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
         temp = (*countIt)[0];
         if(temp > max)
         {
-            cout << "temp > max" << endl;
+            //cout << "temp > max" << endl;
             max = temp;
             maxNames.clear();
             maxNames.push_back(name);
@@ -115,7 +115,7 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
         }
         
         else if (temp == max) {
-            cout << "temp = max" << endl;
+            //cout << "temp = max" << endl;
             tie = true;
             maxNames.push_back(name);
             mapOfIllegalNames[name] = name;
@@ -123,7 +123,7 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
         
         else if(temp < min)
         {
-            cout << "temp < min" << endl;
+            //cout << "temp < min" << endl;
             min = temp;
             minNames.clear();
             minNames.push_back(name);
@@ -132,7 +132,7 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
         }
         
         else if (temp == min) {
-            cout << "temp = min" << endl;
+            //cout << "temp = min" << endl;
             minNames.push_back(name);
         }
         //voteCounts.push_back(temp);
@@ -143,10 +143,15 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
 //    std::deque<int> result(0);
 //    result.push_front(-1);
 
+   bool overHalf = false;
+
+   if( max >= (numChoices/2) ) {
+      overHalf = true;
+   }
 
    // if maxNames has more than one value, must be a tie
-   if( maxNames.size() > 1 ) {
-      cout << "maxNames size: " << (int) maxNames.size() << endl;
+   if( maxNames.size() > 1 || !overHalf  ) {
+      //cout << "maxNames size: " << (int) maxNames.size() << endl;
 
      // so need to delete the minName from ballot
      // need to grab the people that voted for the min name
@@ -157,13 +162,13 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
 
      minNamesIt = minNames.begin();
 
-     cout << *minNamesIt << endl;
+     //cout << *minNamesIt << endl;
      ret = ballotsSortedByVotes.equal_range(*minNamesIt);  // grabs all the ballots who voted for minName
 
     for (mapIt=ret.first; mapIt!=ret.second; ++mapIt) {
-      cout << "original front: " << (*mapIt).second.front() << endl;
+      //cout << "original front: " << (*mapIt).second.front() << endl;
       (*mapIt).second.pop_front();
-      cout << "popped front, new front is: " << (*mapIt).second.front() << endl;
+      //cout << "popped front, new front is: " << (*mapIt).second.front() << endl;
 
       int newVote;
       newVote = (*mapIt).second.front();
@@ -195,7 +200,7 @@ std::vector<int> voting_eval (std::deque<std::deque<int> > ballotContainer, int 
     while(!minNames.empty())
     {
        cout << "MinNames: " << endl;
-        cout << minNames.front() << endl; //prints the first element of the results container (which holds at least one winner)
+       cout << minNames.front() << endl; //prints the first element of the results container (which holds at least one winner)
         minNames.pop_front(); //remove the winner that we just printed (note that pop_front DOES NOT return anything
     }
 
@@ -297,77 +302,85 @@ void tempPrint(std::deque<std::deque<int> > ballotContainer)
  * @param w a std::ostream
  */
 void voting_solve (std::istream& r, std::ostream& w) {
-    string line;
-    voting_read(r, line); //Read 1st line (it says how many candidates there are)
-    int numChoices = atoi(line.c_str()); //Store first line as number of candidates
-    
-    //Read second block of information: ordered names of candidates and store them in a vector
-    //Note: We tried to use an array but it wasn't working because we were trying to assign it
-    //a variable size.
-    std::vector<string> names(numChoices + 1);
-    for(int i = 0; i < numChoices; ++i)
+    string elections;
+    voting_read(r, elections);
+    int loopNum = atoi(elections.c_str());
+    for(int k = 0; k < loopNum; ++k)
     {
-        voting_read(r, line);
-        names[i + 1] = line;
-    }
-    
-    //Container for all ballots: Deque (only b/c we don't know the number of ballots, if we
-    //did, then we'd use a Vector)
-    //NOTE: I think the first parameter is setting the initial size, so 0 might be inefficient
-    std::deque<std::deque<int> > ballotContainer(0, deque<int> (numChoices));
+	    string line;
+            voting_read(r, line);
+	    voting_read(r, line); //Read 1st line (it says how many candidates there are)
+	    int numChoices = atoi(line.c_str()); //Store first line as number of candidates
+	    
+	    //Read second block of information: ordered names of candidates and store them in a vector
+	    //Note: We tried to use an array but it wasn't working because we were trying to assign it
+	    //a variable size.
+	    std::vector<string> names(numChoices + 1);
+	    for(int i = 0; i < numChoices; ++i)
+	    {
+		voting_read(r, line);
+		names[i + 1] = line;
+	    }
+	    
+	    //Container for all ballots: Deque (only b/c we don't know the number of ballots, if we
+	    //did, then we'd use a Vector)
+	    //NOTE: I think the first parameter is setting the initial size, so 0 might be inefficient
+	    std::deque<std::deque<int> > ballotContainer(0, deque<int> (numChoices));
 
 
-    multimap<int, std::deque<int> > ballotsSortedByVotes;
-
-    
-    //Container for each ballot: Vector
-    std::deque<int> tempBallot(numChoices);
-    int ballotNums = 0;
-    //read the ballots one by one, store them in their own deque, then add that deque to the ballotContainer
-    while (voting_readBallot(r, numChoices, tempBallot))
-    {
-        ballotContainer.push_back(tempBallot);
-
-        std::deque<int>::iterator it;
-        it = tempBallot.begin();
-        
-        ballotsSortedByVotes.insert(pair<int, std::deque<int> >(tempBallot[0], tempBallot));      
-    
-        ++ballotNums;
-    }
-
-    //tempPrint(ballotContainer);
+	    multimap<int, std::deque<int> > ballotsSortedByVotes;
 
 
+	    
+	    //Container for each ballot: Vector
+	    std::deque<int> tempBallot(numChoices);
+	    int ballotNums = 0;
+	    //read the ballots one by one, store them in their own deque, then add that deque to the ballotContainer
+	    while (voting_readBallot(r, numChoices, tempBallot))
+	    {
+		ballotContainer.push_back(tempBallot);
 
-        
-    std::vector<int> result = voting_eval(ballotContainer, numChoices, ballotNums, ballotsSortedByVotes);
+		std::deque<int>::iterator it;
+		it = tempBallot.begin();
+		
+		ballotsSortedByVotes.insert(pair<int, std::deque<int> >(tempBallot[0], tempBallot));      
+	    
+		++ballotNums;
+	    }
+
+	    //tempPrint(ballotContainer);
 
 
-    std::vector<int>::iterator resultIt;
-    resultIt = result.begin();
 
-    int max = *resultIt;
+		
+	    std::vector<int> result = voting_eval(ballotContainer, numChoices, ballotNums, ballotsSortedByVotes);
 
-    while(resultIt != result.end())
-    {
 
-        if(*resultIt >= max)
-            max = *resultIt;
+	    std::vector<int>::iterator resultIt;
+	    resultIt = result.begin();
 
- //prints the first element of the results container (which holds at least one winner)
-        //result.pop_front(); //remove the winner that we just printed (note that pop_front DOES NOT return anything
-     
-     resultIt++;
-    }
+	    int max = *resultIt;
 
-    resultIt = result.begin();
+	    while(resultIt != result.end())
+	    {
 
-    while(resultIt != result.end()) {
+		if(*resultIt >= max)
+		    max = *resultIt;
 
-       if(*resultIt == max) 
-          w << names[resultIt-result.begin()] << endl;
-    //tempPrint(ballotContainer); //this prints the processed ballot matrix
-        resultIt++;
-    }
+	 //prints the first element of the results container (which holds at least one winner)
+		//result.pop_front(); //remove the winner that we just printed (note that pop_front DOES NOT return anything
+	     
+	     resultIt++;
+	    }
+
+	    resultIt = result.begin();
+
+	    while(resultIt != result.end()) {
+
+	       if(*resultIt == max) 
+		  w << names[resultIt-result.begin()] << endl;
+	    //tempPrint(ballotContainer); //this prints the processed ballot matrix
+		resultIt++;
+	    }
+        }
 }
