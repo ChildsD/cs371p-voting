@@ -105,15 +105,8 @@ void voting_solve (std::istream& r, std::ostream& w) {
     std::deque<int> result = voting_eval(ballotContainer); //returns the # of the winner
     while(!result.empty())
     {
-        cout << result.front() << endl;
+        w << result.front() << endl;
         result.pop_front();
     }
-//    for(int i = 0; i < sizeof(result); ++i)
-//    {
-//        if(result[i] == 0)
-//            break;
-//        w << i << endl;
-////        w << names[i] << endl;
-//    }
     //tempPrint(ballotContainer); //this prints the processed ballot matrix
 }
