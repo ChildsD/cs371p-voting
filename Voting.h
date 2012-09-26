@@ -5,6 +5,7 @@
 #include <cassert>  // assert
 #include <iostream> // cout, endl, istream, ostream
 #include <vector>
+#include <deque>
 using namespace std;
 
 // ------------
@@ -27,6 +28,17 @@ bool voting_read (std::istream& r, string & x)
     return true;
 }
 
+bool voting_readBallot (std::istream& r, int num, std::vector<int>& ballot)
+{
+    for(int i = 0; i < num; ++i)
+    {
+        r >> ballot[i];
+    }
+    if(!r)
+        return false;
+    return true;
+}
+
 // ------------
 // voting_eval
 // ------------
@@ -34,9 +46,24 @@ bool voting_read (std::istream& r, string & x)
 /**
  * -- Put documentation here! --
  */
-int collatz_eval (int i, int j)
+std::deque<int> voting_eval (std::deque<std::vector<int> > ballotContainer)
 {
-    
+    std::deque<int> result(0);
+    result.push_front(-1);
+    return result; //change this!
+}
+
+void tempPrint(std::deque<std::vector<int> > ballotContainer)
+{
+    for(int i = 0; i < ballotContainer.size(); ++i)
+    {
+        cout << "{ ";
+        for(int j = 0; j < ballotContainer[i].size(); ++j)
+        {
+            cout << ballotContainer[i][j] << " ";
+        }
+        cout << "}" << endl;
+    }
 }
 
 // -------------
@@ -63,8 +90,30 @@ void voting_solve (std::istream& r, std::ostream& w) {
         names[i + 1] = x;
     }
     
-    while (voting_read(r, x))
+    //Container for all ballots: Deque (only b/c we don't know the number of ballots, if we
+    //did, then we'd use a Vector)
+    //NOTE: I think the first parameter is setting the initial size, so 0 might be inefficient
+    std::deque<std::vector<int> > ballotContainer(0, vector<int> (num));   
+    
+    //Container for each ballot: Vector
+    std::vector<int> tempBallot(num);
+    while (voting_readBallot(r, num, tempBallot))
     {
-        cout << x << endl;
+        ballotContainer.push_back(tempBallot);
     }
+    
+    std::deque<int> result = voting_eval(ballotContainer); //returns the # of the winner
+    while(!result.empty())
+    {
+        cout << result.front() << endl;
+        result.pop_front();
+    }
+//    for(int i = 0; i < sizeof(result); ++i)
+//    {
+//        if(result[i] == 0)
+//            break;
+//        w << i << endl;
+////        w << names[i] << endl;
+//    }
+    //tempPrint(ballotContainer); //this prints the processed ballot matrix
 }
