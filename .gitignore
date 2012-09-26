@@ -3,6 +3,7 @@
 *.zip
 *.dmg
 *.tar
+*.out
 
 # OS generated files #
 ######################
