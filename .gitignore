@@ -5,6 +5,7 @@
 *.tar
 *.out
 *.in
+*.app
 
 # OS generated files #
 ######################
