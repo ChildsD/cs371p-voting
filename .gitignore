@@ -7,6 +7,8 @@
 *.in
 *.app
 
+RunVoting
+
 # OS generated files #
 ######################
 .DS_Store
