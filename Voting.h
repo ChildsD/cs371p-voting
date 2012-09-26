@@ -44,12 +44,27 @@ int collatz_eval (int i, int j)
 // -------------
 
 /**
- * read, eval, print loop
+ * -- Put documentation here! --
  * @param r a std::istream
  * @param w a std::ostream
  */
 void voting_solve (std::istream& r, std::ostream& w) {
     string x;
-    while (voting_read(r, x)) {
+    voting_read(r, x); //Read 1st line (it says how many candidates there are)
+    int num = atoi(x.c_str()); //Store first line as number of candidates
+    
+    //Read second block of information: ordered names of candidates and store them in a vector
+    //Note: We tried to use an array but it wasn't working because we were trying to assign it
+    //a variable size.
+    std::vector<string> names(num + 1);
+    for(int i = 0; i < num; ++i)
+    {
+        voting_read(r, x);
+        names[i + 1] = x;
+    }
+    
+    while (voting_read(r, x))
+    {
         cout << x << endl;
-        }}
+    }
+}
